@@ -1,0 +1,11 @@
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\bin\Debug\CapaNegocio.dll
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\bin\Debug\CapaNegocio.pdb
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\bin\Debug\CapaDatos.dll
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\bin\Debug\CapaEntidad.dll
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\bin\Debug\CapaDatos.pdb
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\bin\Debug\CapaEntidad.pdb
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\obj\Debug\CapaNegocio.csproj.AssemblyReference.cache
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\obj\Debug\CapaNegocio.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\obj\Debug\CapaNegocio.csproj.CopyComplete
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\obj\Debug\CapaNegocio.dll
+C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaNegocio\obj\Debug\CapaNegocio.pdb
