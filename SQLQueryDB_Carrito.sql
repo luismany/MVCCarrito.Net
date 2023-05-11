@@ -118,7 +118,7 @@ IdDepartamento varchar(2) not null,
 IdProvincia varchar(4) not null
 )
 
-
+////////////////////////////////////////////////////////
 create proc sp_AgregarUsuario
 @Nombres varchar(100),
 @Apellidos varchar(100),
@@ -141,10 +141,9 @@ begin
 	end
 	else
 		set @Mensaje= 'El correo ingresado ya existe'
-
 end
-
-
+//////////////////////////////////////////////////////////////////////////
+go
 create procedure sp_EditarUsuario
 @IdUsuario int,
 @Nombres varchar(100),
@@ -168,4 +167,74 @@ begin
 
 	else
 		set @Mensaje= 'El Correo del usuario ya existe'
+end
+//////////////////////////////////////////////////////////////
+go
+
+create proc sp_AgregarCategoria
+@Descripcion varchar (100),
+@Activo bit,
+@Mensaje varchar(500) output,
+@Resultado int output
+as
+begin
+	set @Resultado= 0
+
+	if not exists(select * from Categoria where Descripcion= @Descripcion )
+
+	begin
+		insert into Categoria(Descripcion, Activo) 
+		values (@Descripcion, @Activo)
+
+		set @Resultado= Scope_Identity()
+	end
+	else
+		set @Mensaje= 'La Categoria ingresada ya existe'
+
+end
+////////////////////////////////////////////////////////////////////
+go
+
+create procedure sp_EditarCategoria
+@IdCategoria int,
+@Descripcion varchar(100),
+@Activo bit ,
+@Mensaje varchar(100) output,
+@Resultado bit output
+as
+
+begin
+	set @Resultado= 0
+
+	if not exists(select * from Categoria where Descripcion=@Descripcion and IdCategoria != @IdCategoria)
+	begin
+		update top(1) Categoria set Descripcion=@Descripcion, Activo=@Activo
+		where IdCategoria= @IdCategoria
+		
+		set @Resultado= 1
+	end
+
+	else
+		set @Mensaje= 'La Categoria ya existe'
+end
+///////////////////////////////////////////////////////////
+go
+create proc sp_EliminarCategoria
+@IdCategoria int,
+@Mensaje varchar(100) output,
+@Resultado bit output
+
+as
+begin
+	set @Resultado=0
+	if not exists(select * from Producto p
+	inner join Categoria c on c.IdCategoria=p.CategoriaId
+	where p.CategoriaId=@IdCategoria )
+	begin
+		delete top(1) from Categoria where IdCategoria=@IdCategoria
+		set @Resultado=1
+	end
+	else
+	set @Mensaje='La Categoria se encuentra relaconada a un prodructo'
+
 end
