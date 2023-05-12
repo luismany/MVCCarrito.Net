@@ -238,3 +238,71 @@ begin
 	set @Mensaje='La Categoria se encuentra relaconada a un prodructo'
 
 end
+//////////////////////////////////////////////////////////////////////////////
+go
+create proc sp_AgregarMarca
+@Descripcion varchar (500),
+@Activo bit,
+@Mensaje varchar(500) output,
+@Resultado int output
+as
+begin
+	set @Resultado= 0
+
+	if not exists(select * from Marca where Descripcion= @Descripcion )
+
+	begin
+		insert into Marca(Descripcion, Activo) 
+		values (@Descripcion, @Activo)
+
+		set @Resultado= Scope_Identity()
+	end
+	else
+		set @Mensaje= 'La Marca ingresada ya existe'
+
+end
+//////////////////////////////////////////////////////////////////////
+go
+create procedure sp_EditarMarca
+@IdMarca int,
+@Descripcion varchar(500),
+@Activo bit ,
+@Mensaje varchar(100) output,
+@Resultado bit output
+as
+
+begin
+	set @Resultado= 0
+
+	if not exists(select * from Marca where Descripcion=@Descripcion and IdMarca != @IdMarca)
+	begin
+		update top(1) Marca set Descripcion=@Descripcion, Activo=@Activo
+		where IdMarca= @IdMarca
+		
+		set @Resultado= 1
+	end
+
+	else
+		set @Mensaje= 'La Marca ya existe'
+end
+////////////////////////////////////////////////////////////////////////
+go
+create proc sp_EliminarMarca
+@IdMarca int,
+@Mensaje varchar(100) output,
+@Resultado bit output
+
+as
+begin
+	set @Resultado=0
+	if not exists(select * from Producto p
+	inner join Marca m on m.IdMarca =p.MarcaId
+	where p.MarcaId=@IdMarca )
+	begin
+		delete top(1) from Marca where IdMarca=@IdMarca
+		set @Resultado=1
+	end
+	else
+	set @Mensaje='La Marca se encuentra relaconada a un prodructo'
+
+end
