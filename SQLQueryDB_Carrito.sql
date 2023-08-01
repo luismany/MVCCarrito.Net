@@ -306,3 +306,91 @@ begin
 	set @Mensaje='La Marca se encuentra relaconada a un prodructo'
 
 end
+//////////////////////////////////////////////////////////////////
+
+go
+create proc sp_AgregarProducto
+@Nombre varchar (100),
+@Descripcion varchar (500),
+@CategoriaId int,
+@MarcaId int,
+@Precio decimal(10,2),
+@Stock int,
+@Activo bit,
+@Mensaje varchar(500) output,
+@Resultado int output
+as
+begin
+	set @Resultado= 0
+
+	if not exists(select * from Producto where Nombre= @Nombre )
+
+	begin
+		insert into Producto(Nombre,Descripcion,CategoriaId,MarcaId,Precio,Stock,Activo) 
+		values (@Nombre,@Descripcion,@CategoriaId,@MarcaId,@Precio,@Stock,@Activo)
+
+		set @Resultado= Scope_Identity()
+	end
+	else
+		set @Mensaje= 'El Producto ingresado ya existe'
+end
+//////////////////////////////////////////////////////////////////////
+go
+create procedure sp_EditarProducto
+@IdProducto int,
+@Nombre varchar (100),
+@Descripcion varchar (500),
+@CategoriaId int,
+@MarcaId int,
+@Precio decimal(10,2),
+@Stock int,
+@Activo bit ,
+@Mensaje varchar(100) output,
+@Resultado bit output
+as
+
+begin
+	set @Resultado= 0
+
+	if not exists(select * from Producto where Nombre=Nombre and IdProducto != @IdProducto)
+	begin
+		update top(1) Producto set Nombre=@Nombre,Descripcion=@Descripcion,CategoriaId=@CategoriaId,
+					 MarcaId=@MarcaId,Precio=@Precio,Stock=@Stock,Activo=@Activo
+		where IdProducto= @IdProducto
+		
+		set @Resultado= 1
+	end
+
+	else
+		set @Mensaje= 'El Producto ya existe'
+end
+///////////////////////////////////////////////////////////////////////////
+go
+create proc sp_EliminarProducto
+@IdProducto int,
+@Mensaje varchar(100) output,
+@Resultado bit output
+
+as
+begin
+	set @Resultado=0
+	if not exists(select * from DetalleVenta dv
+	inner join Producto p on p.IdProducto = dv.ProductoId
+	where p.IdProducto =@IdProducto )
+	begin
+		delete top(1) from Producto where IdProducto=@IdProducto
+		set @Resultado=1
+	end
+	else
+	set @Mensaje='El producto esta relacionado a una venta'
+
+end
+////////////////////////////////////////////////////////////////////////
+
+select p.IdProducto,p.Nombre,p.Descripcion,
+m.IdMarca,m.Descripcion[DesMarca],
+c.IdCategoria,c.Descripcion[DesCategoria],
+p.Precio,p.Stock,p.RutaImagen,p.NombreImagen,p.Activo
+ from Producto p
+inner join Marca m on m.IdMarca=p.MarcaId
+inner join Categoria c on c.IdCategoria=p.CategoriaId
