@@ -21,12 +21,13 @@ namespace CapaDatos
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("select p.IdProducto,p.Nombre,p.Descripcion,");
-            sb.AppendLine("m.IdMarca,m.Descripcion[DesMarca],");
             sb.AppendLine("c.IdCategoria,c.Descripcion[DesCategoria],");
+            sb.AppendLine("m.IdMarca,m.Descripcion[DesMarca],"); 
             sb.AppendLine("p.Precio,p.Stock,p.RutaImagen,p.NombreImagen,p.Activo");
             sb.AppendLine("from Producto p");
-            sb.AppendLine("inner join Marca m on m.IdMarca=p.MarcaId");
             sb.AppendLine("inner join Categoria c on c.IdCategoria=p.CategoriaId");
+            sb.AppendLine("inner join Marca m on m.IdMarca=p.MarcaId");
+            
 
             SqlCommand cmd = new SqlCommand(sb.ToString(), con);
             cmd.CommandType = CommandType.Text;
@@ -42,12 +43,12 @@ namespace CapaDatos
                             IdProducto = Convert.ToInt32(dr["IdProducto"]),
                             Nombre = dr["Nombre"].ToString(),
                             Descripcion = dr["Descripcion"].ToString(),
-                            oMarca = new Marca() { IdMarca = Convert.ToInt32(dr["IdMarca"]), Descripcion = dr["DesMarca"].ToString() },
                             oCategoria = new Categoria { IdCategoria = Convert.ToInt32(dr["IdCategoria"]), Descripcion = dr["DesCategoria"].ToString() },
+                            oMarca = new Marca() { IdMarca = Convert.ToInt32(dr["IdMarca"]), Descripcion = dr["DesMarca"].ToString() },
                             Precio = Convert.ToDecimal(dr["Precio"], new CultureInfo("es-NI")),
                             Stock = Convert.ToInt32(dr["Stock"]),
-                            RutaImagen = dr["RutaImaen"].ToString(),
-                            NombreImagen = dr["NombreImagen"].ToString(),
+                            RutaImagen=dr["RutaImagen"].ToString(),
+                            NombreImagen=dr["NombreImagen"].ToString(),
                             Activo = Convert.ToBoolean(dr["Activo"])
                         });
                 }
@@ -65,12 +66,10 @@ namespace CapaDatos
             SqlCommand cmd = new SqlCommand("sp_AgregarProducto", con);
             cmd.Parameters.AddWithValue("Nombre", obj.Nombre);
             cmd.Parameters.AddWithValue("Descripcion", obj.Descripcion);
-            cmd.Parameters.AddWithValue("IdMarca", obj.oMarca.IdMarca);
-            cmd.Parameters.AddWithValue("IdCategoria", obj.oCategoria.IdCategoria);
+            cmd.Parameters.AddWithValue("CategoriaId", obj.oCategoria.IdCategoria);
+            cmd.Parameters.AddWithValue("MarcaId", obj.oMarca.IdMarca);
             cmd.Parameters.AddWithValue("Precio", obj.Precio);
             cmd.Parameters.AddWithValue("Stock", obj.Stock);
-            cmd.Parameters.AddWithValue("RutaImagen", obj.RutaImagen);
-            cmd.Parameters.AddWithValue("NombreImagen", obj.NombreImagen);
             cmd.Parameters.AddWithValue("Activo", obj.Activo);
             cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
             cmd.Parameters.Add("Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
@@ -94,12 +93,10 @@ namespace CapaDatos
             cmd.Parameters.AddWithValue("IdProducto", obj.IdProducto);
             cmd.Parameters.AddWithValue("Nombre", obj.Nombre);
             cmd.Parameters.AddWithValue("Descripcion", obj.Descripcion);
-            cmd.Parameters.AddWithValue("IdMarca", obj.oMarca.IdMarca);
-            cmd.Parameters.AddWithValue("IdCategoria", obj.oCategoria.IdCategoria);
+            cmd.Parameters.AddWithValue("CategoriaId", obj.oCategoria.IdCategoria);
+            cmd.Parameters.AddWithValue("MarcaId", obj.oMarca.IdMarca);           
             cmd.Parameters.AddWithValue("Precio", obj.Precio);
             cmd.Parameters.AddWithValue("Stock", obj.Stock);
-            cmd.Parameters.AddWithValue("RutaImagen", obj.RutaImagen);
-            cmd.Parameters.AddWithValue("NombreImagen", obj.NombreImagen);
             cmd.Parameters.AddWithValue("Activo", obj.Activo);
             cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
             cmd.Parameters.Add("Resultado", SqlDbType.Bit).Direction = ParameterDirection.Output;

@@ -29,6 +29,8 @@ namespace CapaPresentacionAdmin.Controllers
         {
             return View();
         }
+
+        /*-------------CATEGORIA---------------*/
         #region Categoria
         [HttpGet]
         public JsonResult ListarCategoria()
@@ -65,6 +67,7 @@ namespace CapaPresentacionAdmin.Controllers
 
         }
         #endregion
+        /*-------------MARCA---------------*/
         #region Marca
         [HttpGet]
         public JsonResult ListarMarca()
@@ -101,6 +104,7 @@ namespace CapaPresentacionAdmin.Controllers
 
         }
         #endregion
+        /*-------------PRODUCTOS---------------*/
         #region Producto
         [HttpGet]
         public JsonResult ListarProducto()
@@ -124,13 +128,12 @@ namespace CapaPresentacionAdmin.Controllers
             decimal precio;
 
             if (decimal.TryParse(oProducto.PrecioTexto, NumberStyles.AllowDecimalPoint, new CultureInfo("es-NI"), out precio))
-
                 oProducto.Precio = precio;
+
             else
-                return Json(new { operacion_exitosa = false, mensaje = "El formato del plrecio debe ser ##.##" }, JsonRequestBehavior.AllowGet);
+                return Json(new { operacion_exitosa = false, mensaje = "El formato del precio debe ser ##.##" }, JsonRequestBehavior.AllowGet);
 
-
-            if (oProducto.IdProducto == 0)
+             if (oProducto.IdProducto == 0)
             { 
                 int idProductoGenerado = new CN_Producto().Registrar(oProducto, out mensaje);
 
@@ -139,9 +142,8 @@ namespace CapaPresentacionAdmin.Controllers
             else
                 operacion_exitosa = false;
             }
-            else
-                operacion_exitosa = new CN_Producto().Editar(oProducto, out mensaje);
-
+            else { operacion_exitosa = new CN_Producto().Editar(oProducto, out mensaje); }
+                
             if(operacion_exitosa)
             {
                 if(archivoImagen != null)
@@ -173,6 +175,23 @@ namespace CapaPresentacionAdmin.Controllers
             }
             return Json(new { operacion_exitosa = operacion_exitosa, idGenerado=oProducto.IdProducto, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
 
+        }
+        [HttpPost]
+        public JsonResult ImagenProducto(int id)
+        {
+            bool conversion;
+            Producto oProducto = new CN_Producto().Listar().Where(p => p.IdProducto == id).FirstOrDefault();
+            string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine( oProducto.RutaImagen, oProducto.NombreImagen), out conversion);
+
+            return Json(new
+            {
+                conversion = conversion,
+                textobase64 = textoBase64,
+                extencion = Path.GetExtension(oProducto.NombreImagen)
+
+            },
+            JsonRequestBehavior.AllowGet
+            ); 
         }
 
         [HttpPost]

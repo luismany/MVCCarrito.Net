@@ -55,12 +55,10 @@ namespace CapaNegocio
                 mensaje = "El nombre del producto no puede estar vacio";
             else if (string.IsNullOrEmpty(obj.Descripcion) || string.IsNullOrWhiteSpace(obj.Descripcion))
                 mensaje = "La descripcion de la categoria no puede estar vacio";
+            else if (obj.oCategoria.IdCategoria == 0)
+                mensaje = "Debe seleccionar una Categoria";
             else if (obj.oMarca.IdMarca == 0)
-                mensaje = "Debe seleccionar una Marca";
-            else if (obj.oCategoria.IdCategoria == 0)
-                mensaje = "Debe seleccionar una Categoria";
-            else if (obj.oCategoria.IdCategoria == 0)
-                mensaje = "Debe seleccionar una Categoria";
+                mensaje = "Debe seleccionar una Marca";  
             else if (obj.Precio == 0)
                 mensaje = "Debe ingresar un precio";
             else if (obj.Stock == 0)
