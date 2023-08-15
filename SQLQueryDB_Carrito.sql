@@ -394,3 +394,42 @@ p.Precio,p.Stock,p.RutaImagen,p.NombreImagen,p.Activo
  from Producto p
 inner join Marca m on m.IdMarca=p.MarcaId
 inner join Categoria c on c.IdCategoria=p.CategoriaId
+go
+//////////////////////////////////////////////////////////////////////
+go
+create Proc sp_ReporteDashboard
+as
+begin
+
+select
+
+(select count(*) from Cliente) [TotalCliente],
+(select isnull( sum(Cantidad),0) from DetalleVenta) [TotalVenta], 
+(select count(*) from Producto) [TotalProducto]
+
+end
+
+exec sp_ReporteDashboard
+
+/////////////////////////////////////////////////////////////////////////
+
+create proc sp_ReporteVentas(
+@FechaInicio varchar(10),
+@FechaFin varchar(10),
+@IdTransaccion varchar(50)
+)
+as
+begin
+		set dateformat dmy
+		/*CONVERT( char(10), v.FechaVenta,103) muestra solo la fecha*/
+
+		select CONVERT( char(10), v.FechaVenta,103)[FechaVenta],CONCAT( c.Nombres,' ',c.Apellidos)[Cliente],
+		p.Nombre[Producto], p.Precio,dv.Cantidad,dv.Total, v.IdTransaccion
+		from DetalleVenta dv
+		inner join Producto p on p.IdProducto=dv.ProductoId
+		inner join Venta v on v.IdVenta= dv.VentaId
+		inner join Cliente c on c.IdCliente= v.ClienteId
+		where CONVERT(date, v.FechaVenta) between @FechaInicio and @FechaFin 
+		and v.IdTransaccion=iif(@IdTransaccion ='',v.IdTransaccion,@IdTransaccion)
+
+end

@@ -17,6 +17,7 @@ namespace CapaPresentacionAdmin
                        "~/Scripts/DataTables/dataTables.responsive.js",
                        "~/Scripts/sweetalert.min.js",
                        "~/Scripts/jquery.validate.js",
+                       "~/Scripts/jquery-ui.js",
                        "~/Scripts/scripts.js"));
 
             //bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
@@ -34,7 +35,8 @@ namespace CapaPresentacionAdmin
                 "~/Content/site.css",
                 "~/Content/DataTables/css/jquery.dataTables.css",
                 "~/Content/DataTables/css/responsive.dataTables.css",
-                "~/Content/sweetalert.css"
+                "~/Content/sweetalert.css",
+                "~/Content/jquery-ui.css"
                 ));
         }
     }
