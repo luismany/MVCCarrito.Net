@@ -12,7 +12,7 @@ namespace CapaNegocio
     public class CN_Usuarios
     {
         private CD_Usuarios objCapaDato = new CD_Usuarios();
-
+       
         public List<Usuario> Listar()
         {
             return objCapaDato.Listar();
@@ -32,9 +32,25 @@ namespace CapaNegocio
 
             if (string.IsNullOrEmpty(mensaje))
             {
-                string clave = "test123";
-                obj.Clave = CN_Recursos.ConvertirSha256(clave);
-                return objCapaDato.Registrar(obj, out mensaje);
+                string clave = CN_Recursos.GenerarClave();
+
+                string asunto = "Creacion de Cuenta";
+                string mensajeCorreo = "<h3>Su cuenta fue creada correctaente</h3></br>" +
+                    "<p>Su contraseña para acceder es: </p>"+ clave;
+                bool respuesta = CN_Recursos.EnviarCorreo(obj.Correo,asunto,mensajeCorreo);
+
+                if (respuesta)
+                {
+                    obj.Clave = CN_Recursos.ConvertirSha256(clave);
+                    return objCapaDato.Registrar(obj, out mensaje);
+                }
+                else
+                {
+                    mensaje = "No se pudo enviar el correo";
+                    return 0;
+                }
+
+               
             }
             else
                 return 0;
@@ -65,6 +81,39 @@ namespace CapaNegocio
         {
             return objCapaDato.Eliminar(id, out mernsaje);
         }
+
+        public bool CambiarClave(int idUsuario, string nuevaClave,out string mensaje)
+        {
+            return objCapaDato.CambiarClave(idUsuario,nuevaClave,out mensaje);
+        }
+
+        public bool RestabkecerClave(int idUsuario,string correo, out string mensaje)
+        {
+
+            mensaje = string.Empty;
+            string nuevaClave = CN_Recursos.GenerarClave();
+            bool resultado = objCapaDato.RestablecerClave(idUsuario,CN_Recursos.ConvertirSha256(nuevaClave),out mensaje);
+
+            if (resultado)
+            {
+                string asunto = "Contraseña Reestablecida";
+                string mensajeCorreo = "<h3>Su cuenta fue restablecida correctaente</h3></br>" +
+                    "<p>Su contraseña para acceder ahora es: </p>" + nuevaClave;
+                bool respuesta = CN_Recursos.EnviarCorreo(correo, asunto, mensajeCorreo);
+
+                if (resultado) return true;
+                else
+                {
+                    mensaje = "No se pudo eviar el correo";
+                    return false;
+                }
+
+            }
+            else return false;
+            
+
+        }
+
 
     }
 }

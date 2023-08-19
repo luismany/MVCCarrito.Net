@@ -48,12 +48,12 @@ namespace CapaNegocio
 
                 var smtp = new SmtpClient()
                 {
-                    Credentials = new NetworkCredential("teacher.luis360@gmail.com", "jgkjgkjflkgj"),
+                    Credentials = new NetworkCredential("teacher.luis360@gmail.com", "vphlizeoefwldrkq"),
                     Host = "smtp.gmail.com",
                     Port = 587,
                     EnableSsl = true
                 };
-
+                
                 smtp.Send(mail);
                 resultado = true;
             }
