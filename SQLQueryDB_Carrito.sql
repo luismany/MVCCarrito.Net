@@ -433,3 +433,27 @@ begin
 		and v.IdTransaccion=iif(@IdTransaccion ='',v.IdTransaccion,@IdTransaccion)
 
 end
+/////////////////////////////////////////////////////////////////////////////
+
+create proc sp_RegistrarCliente(
+@Nombres varchar(100),
+@Apellidos varchar(100),
+@Correo varchar(100),
+@Clave varchar(150),
+@Mensaje varchar(500) output,
+@Resultado int output 
+)
+as
+begin
+	set @Resultado=0
+	if not exists(select * from Cliente where Correo=@Correo)
+	begin
+		insert into Cliente (Nombres,Apellidos,Correo,Clave)
+		values(@Nombres,@Apellidos,@Correo,@Clave)
+
+		set @Resultado= Scope_Identity()
+	end
+	else
+
+		set @Mensaje='El correo ya esta registrado con otro cliente'
+end

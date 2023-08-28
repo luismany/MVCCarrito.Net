@@ -87,7 +87,7 @@ namespace CapaNegocio
             return objCapaDato.CambiarClave(idUsuario,nuevaClave,out mensaje);
         }
 
-        public bool RestabkecerClave(int idUsuario,string correo, out string mensaje)
+        public bool RestablecerClave(int idUsuario,string correo, out string mensaje)
         {
 
             mensaje = string.Empty;

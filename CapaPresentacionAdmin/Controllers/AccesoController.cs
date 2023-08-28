@@ -102,7 +102,7 @@ namespace CapaPresentacionAdmin.Controllers
             }
 
             string mensaje = string.Empty;
-            bool respuesta = new CN_Usuarios().RestabkecerClave(oUsuario.IdUsuario, correo, out mensaje);
+            bool respuesta = new CN_Usuarios().RestablecerClave(oUsuario.IdUsuario, correo, out mensaje);
 
             if (respuesta) return RedirectToAction("Index","Acceso");
             else

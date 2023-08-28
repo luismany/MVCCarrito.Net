@@ -1,6 +1,5 @@
 C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaEntidad\bin\Debug\CapaEntidad.dll
 C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaEntidad\bin\Debug\CapaEntidad.pdb
-C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaEntidad\obj\Debug\CapaEntidad.csproj.AssemblyReference.cache
 C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaEntidad\obj\Debug\CapaEntidad.csproj.CoreCompileInputs.cache
 C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaEntidad\obj\Debug\CapaEntidad.dll
 C:\Users\Usuario\Desktop\CursoMVCCarrito\CapaEntidad\obj\Debug\CapaEntidad.pdb
