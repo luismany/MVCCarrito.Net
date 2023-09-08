@@ -102,5 +102,40 @@ namespace CapaDatos
 
             return resultado;
         }
+
+        public List<Marca> ListarMarcaPorCategoria(int idCategoria)
+        {
+
+            List<Marca> lista = new List<Marca>();
+
+            SqlConnection con = new SqlConnection(Conexion.cn);
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("select distinct m.IdMarca,m.Descripcion from producto p");
+            sb.AppendLine("join Categoria c on c.IdCategoria = p.CategoriaId");
+            sb.AppendLine("join Marca m on m.IdMarca = p.MarcaId and m.Activo = 1");
+            sb.AppendLine("where c.IdCategoria = iif(@IdCategoria = 0, c.IdCategoria, @IdCategoria)");
+
+            SqlCommand cmd = new SqlCommand(sb.ToString(), con);
+            cmd.Parameters.AddWithValue("@IdCategoria",idCategoria);
+            cmd.CommandType = CommandType.Text;
+            con.Open();
+
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                lista.Add(
+                    new Marca()
+                    {
+                        IdMarca = Convert.ToInt32(dr["IdMarca"]),
+                        Descripcion = dr["Descripcion"].ToString(),
+                        
+                    }
+
+                    );
+            }
+
+            return lista;
+        }
     }
 }
