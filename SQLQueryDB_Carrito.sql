@@ -97,6 +97,9 @@ FechaRegistro datetime default getdate()
 
 go
 
+
+select * from Distrito
+
 create table Departamento(
 IdDepartamento varchar(2) not null,
 Descripcion varchar(100)not null
@@ -106,7 +109,8 @@ go
 
 create table Provincia(
 IdProvincia varchar(4) not null,
-Descripcion varchar(100) not null
+Descripcion varchar(100) not null,
+DepartamentoId varchar(2)not null
 )
 
 go
@@ -117,7 +121,7 @@ Descripcion varchar(100) not null,
 IdDepartamento varchar(2) not null,
 IdProvincia varchar(4) not null
 )
-
+go
 ////////////////////////////////////////////////////////
 create proc sp_AgregarUsuario
 @Nombres varchar(100),
@@ -457,3 +461,129 @@ begin
 
 		set @Mensaje='El correo ya esta registrado con otro cliente'
 end
+go
+///////////////////////////////////////////////////////////////////////////////
+create proc sp_ExisteCarrito(
+@ClienteId int,
+@ProductoId int,
+@Resultado bit output
+)
+as
+begin
+	
+	if exists(select * from Carrito where ClienteId=@ClienteId and ProductoId=@ProductoId)
+		set @Resultado=1
+
+	else
+		set @Resultado=0
+end
+go
+///////////////////////////////////////////////////////////////////////////
+create proc sp_OperacionCarrito(
+@ClienteId int,
+@ProductoId int,
+@Sumar bit,
+@Mensaje  varchar(500) output,
+@Resultado bit output 
+)
+as
+begin
+	set @Resultado=1
+	set @Mensaje=''
+
+	declare  @existecarrito bit= iif(exists(select * from Carrito where ClienteId=@ClienteId and ProductoId=@ProductoId),1,0)
+	declare @stockproducto int= (select Stock from Producto where IdProducto=@ProductoId)
+
+	begin try
+
+		begin transaction Operacion
+
+		if(@Sumar=1)
+		begin
+			if(@stockproducto > 0)
+
+			begin
+				if(@existecarrito = 1)
+
+					update Carrito set Cantidad=Cantidad + 1 where ClienteId=@ClienteId and ProductoId=@ProductoId
+				else
+					insert into Carrito (ClienteId,ProductoId,Cantidad) values(@ClienteId,@ProductoId,1)
+					update Producto set Stock=Stock - 1 where IdProducto=@ProductoId
+			end
+			else
+			begin
+				set @Resultado=0
+				set @Mensaje='El Producto no cuenta con stock disponible'
+			end
+		end
+		else
+		begin
+			update Carrito set Cantidad=Cantidad-1 where ClienteId=@ClienteId and ProductoId=@ProductoId
+			update Producto set Stock=Stock+1 where IdProducto=@ProductoId
+		end	
+
+		commit transaction Operacion
+
+		end try
+		Begin Catch
+			set @Resultado = 0
+			set @Mensaje = ERROR_MESSAGE()
+			Rollback Transaction Operacion
+		end catch
+
+end
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////*funcion de tipo tabla*/
+create function fn_ObtenerCarritoCliente(
+@ClienteId int
+)
+returns table
+as
+return(
+		select p.IdProducto,m.Descripcion[DesMarca],p.Nombre,p.Precio,c.Cantidad,p.RutaImagen,p.NombreImagen 
+		from Carrito c
+		join Producto p on p.IdProducto=c.ProductoId
+		join Marca m on m.IdMarca=p.MarcaId
+		where c.ClienteId=@ClienteId
+
+)
+
+
+////////////////////////////////////////////////////////////////////*select * from fn_ObtenerCarritoCliente(1)*/
+
+
+
+create procedure sp_EliminarCarrito(
+@ClienteId int,
+@ProductoId int,
+@Resultado bit output
+)
+as
+begin
+		set @Resultado=1
+		declare @cantidadproducto int=(select Cantidad from Carrito where ClienteId=@ClienteId and ProductoId=@ProductoId)
+
+	begin try
+
+	begin transaction Operacion
+
+		update Producto set Stock=Stock + @cantidadproducto where IdProducto=@ProductoId
+		delete top(1) from Carrito where ClienteId=@ClienteId and ProductoId=@ProductoId
+	
+	commit transaction
+
+	end try
+	begin catch
+
+		set @Resultado=0
+		rollback transaction Operacion
+
+	end catch
+	
+end
+
+
+select *from Departamento
+select *from Provincia
+select *from Distrito

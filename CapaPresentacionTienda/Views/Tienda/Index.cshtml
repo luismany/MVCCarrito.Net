@@ -81,7 +81,7 @@
 
             MostrarProductos(0, 0);
             MostrarCategorias();
-            
+
         })
 
         function MostrarCategorias() {
@@ -119,7 +119,7 @@
                     })
 
                     MostrarMarcas();
-                    
+
                 },
                 beforeSend: function () {
                     $("#contenedor_categorias").LoadingOverlay("show");
@@ -173,7 +173,7 @@
 
         function MostrarProductos(_idCategoria, _idMarca ) {
 
-            
+
 
             jQuery.ajax({
 
@@ -184,9 +184,11 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (response) {
 
+                    console.log(response);
+
                     //limpia el contenedor
                     $("#contenedor_productos").html("");
-                   
+
                     //<div class="col mb-5">
                     //    <div class="card h-100">
                     //        <!-- Product image-->
@@ -211,7 +213,8 @@
 
                         $("<div>").addClass("col mb-5").append(
                             $("<div>").addClass("card h-100").append(
-                                $("<img>").addClass("card-img-top").attr({ "src": "data:image/" + elemento.Extension + ";base64," + elemento.Base64 }),
+                                $("<img>").addClass("card-img-top ").attr({ "src": "data:image/" + elemento.Extension + ";base64," + elemento.Base64 })
+                                    .css({ "width": "200px", "height": "200px" }),
                                 $("<div>").addClass("card-body p-4").append(
                                     $("<div>").addClass("text-center ").append(
                                         $("<h5>").addClass("fw-bolder ").text(elemento.Nombre),
@@ -230,7 +233,7 @@
 
                                         $("<a>").addClass("btn btn-dark mt-auto")
                                             .attr({ "href": "@Url.Action("DetalleProducto","Tienda")" + "?idproducto=" + elemento.IdProducto })
-                                            .text("Ver Detalle")                                   
+                                            .text("Ver Detalle")
                                     )
                                 )
 
@@ -239,14 +242,14 @@
                         ).appendTo("#contenedor_productos")
 
                     })
-                    
+
                 },
                 beforeSend: function () {
                     //$("#contenedor_productos").LoadingOverlay("show");
                 }
             })
         }
-
+        //boton aplicar filtro
         $("#btnaplicarfiltro").click(function () {
 
             var _idCategoria = $("input[name=categoria]:checked").val();
@@ -254,8 +257,49 @@
             MostrarProductos(_idCategoria,_idMarca);
         })
 
+
+        $(document).on("click", "button.agregarcarrito", function () {
+
+            console.log($(this).data("idproducto"));
+
+            jQuery.ajax({
+                url: '@Url.Action("AgregarCarrito", "Tienda")',
+                type: "POST",
+                data: JSON.stringify({ idProducto: $(this).data("idproducto")}),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+
+                    if (data.respuesta) {
+
+                        MostrarCantidadCarrito();
+
+                        swal({
+                            title: "Agregado al carrito",
+                            text: "Desea ir al carrito",
+                            type: "success",
+                            showCancelButton: true,
+                            confirmButtonClass: "btn-primary",
+                            confirmButtonText: "Si",
+                            cancelButtonText: "No",
+                            closeOnConfirm: true
+                        }, function () {
+
+                            window.location.href = '@Url.Action("Carrito","Tienda")';
+
+                        })
+                    } else {
+
+                        swal("", data.mensaje, "warning");
+                    }
+                }
+
+
+            })
+
+
+        })
+
     </script>
-
-
 
 }

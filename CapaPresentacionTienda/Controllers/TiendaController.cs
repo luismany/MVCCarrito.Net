@@ -55,9 +55,9 @@ namespace CapaPresentacionTienda.Controllers
         public JsonResult ListarProductos(int idCategoria, int idMarca)
         {
             bool conversion;
-           // List<Producto> lista = new List<Producto>();
+            List<Producto> lista = new List<Producto>();
 
-           var lista = new CN_Producto().Listar().Select(p => new Producto
+            lista = new CN_Producto().Listar().Select(p => new Producto
             {
 
                 IdProducto = p.IdProducto,
@@ -81,6 +81,113 @@ namespace CapaPresentacionTienda.Controllers
             var jsonresult = Json(new{data=lista },JsonRequestBehavior.AllowGet);
             jsonresult.MaxJsonLength = int.MaxValue;
             return jsonresult;
+        }
+
+        [HttpPost]
+        public JsonResult AgregarCarrito(int idProducto)
+        {
+            int idCliente = ((Cliente)Session["Cliente"]).IdCliente;
+            bool existe = new CN_Carrito().ExisteEnCarrito(idCliente,idProducto);
+            bool respuesta = false;
+            string mensaje = string.Empty;
+
+            if (existe) mensaje = "El Producto ya existe en el Carrito.";
+            else respuesta = new CN_Carrito().OperacionCarrito(idCliente,idProducto,true,out mensaje);
+
+            return Json(new{respuesta=respuesta, mensaje=mensaje },JsonRequestBehavior.AllowGet);   
+        }
+
+        [HttpGet]
+        public JsonResult CantidadEnCarrito()
+        {
+            int idCliente = ((Cliente)Session["Cliente"]).IdCliente;
+            int cantidad = new CN_Carrito().CantidadEnCarrito(idCliente);
+
+            return Json(new { cantidad=cantidad},JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult ListarProductoCarrito()
+        {
+            int idCliente = ((Cliente)Session["Cliente"]).IdCliente;
+            bool conversion;
+
+            List<Carrito> oLista = new List<Carrito>();
+
+            oLista = new CN_Carrito().ListaProductoEnCarrito(idCliente).Select(c => new Carrito()
+            {
+
+                Producto = new Producto()
+                {
+                    IdProducto = c.Producto.IdProducto,
+                    Nombre = c.Producto.Nombre,
+                    oMarca=c.Producto.oMarca,
+                    Precio = c.Producto.Precio,
+                    RutaImagen = c.Producto.RutaImagen,
+                    Base64 = CN_Recursos.ConvertirBase64(Path.Combine(c.Producto.RutaImagen, c.Producto.NombreImagen), out conversion),
+                    Extension = Path.GetExtension(c.Producto.NombreImagen)
+                },
+                Cantidad = c.Cantidad
+
+
+            }).ToList();
+
+            return Json(new { data=oLista},JsonRequestBehavior.AllowGet);
+
+        }
+
+        [HttpPost]
+        public JsonResult OperacionCarrito(int idProducto,bool sumar)
+        {
+            int idCliente = ((Cliente)Session["Cliente"]).IdCliente;
+            bool respuesta;
+            string mensaje = string.Empty;
+
+            respuesta = new CN_Carrito().OperacionCarrito(idCliente,idProducto,true,out mensaje);
+
+            return Json(new { respuesta = respuesta, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult EliminarCarrito(int idProducto)
+        {
+            int idCliente = ((Cliente)Session["Cliente"]).IdCliente;
+            bool respuesta;
+            string mensaje = string.Empty;
+
+
+            respuesta = new CN_Carrito().EliminarCarrito(idCliente,idProducto);
+
+            return Json(new { respuesta = respuesta, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult ObtenerDepartamento()
+        {
+            List<Departamento> lista = new List<Departamento>();
+
+            lista = new CN_Ubicacion().ListaDepartamento();
+
+            return Json(new { lista=lista},JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult ObtenerProvincia(string idDepartamento)
+        {
+            List<Provincia> lista = new List<Provincia>();
+
+            lista = new CN_Ubicacion().ListaProvincia(idDepartamento);
+
+            return Json(new { lista = lista }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult ObtenerDistrito(string idDepartamento, string idProvincia)
+        {
+            List<Distrito> lista = new List<Distrito>();
+
+            lista = new CN_Ubicacion().ListaDistrito(idDepartamento,idProvincia);
+
+            return Json(new { lista = lista }, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult Carrito()
+        {
+            return View();
         }
     }
 }
